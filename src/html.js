@@ -8,6 +8,11 @@ export function buildHtmlDoc(websiteContent) {
     font-family: Calibri, sans-serif;
   }
 
+  a {
+    color: #0093bf;
+    text-decoration: none;
+  }
+
   blockquote {
     background-color: #fff4de;
     border-left: 5px solid #ffdf9f;
@@ -126,7 +131,7 @@ export function buildHtmlDoc(websiteContent) {
 
 function processHtml(html) {
   function populateImages(html) {
-    const BASE_URL = "https://fullstackopen.com";
+    const BASE_URL = "https://fullstackopen.com"; // Hard-coded as static images don't work with /en/ url suffix
     return html.replaceAll("/static/", `${BASE_URL}/static/`);
   }
 

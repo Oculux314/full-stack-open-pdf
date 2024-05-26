@@ -1,6 +1,10 @@
+import dotenv from "dotenv";
 import puppeteer from "puppeteer";
 
-const BASE_URL = "https://fullstackopen.com/en/";
+dotenv.config();
+const BASE_URL = process.env.URL;
+const START_PART = +process.env.START_PART || 0;
+const END_PART = +process.env.END_PART || undefined;
 let browser;
 
 export async function scrape() {
@@ -8,11 +12,13 @@ export async function scrape() {
     console.log(`Opening connection to ${BASE_URL}`);
     browser = await puppeteer.launch({ headless: true });
 
-    const partNames = (await getPartNames()).slice(0, 1);
+    const partNames = (await getPartNames()).slice(START_PART, END_PART);
     console.log(`Found ${partNames.length} parts.`);
     console.log("Scraping... (est. 30s)");
 
-    const parts = await Promise.all(partNames.map(createPart));
+    const parts = await Promise.all(
+      partNames.map((part, num) => createPart(part, START_PART + num))
+    );
     parts.forEach(({ number, sections }) =>
       console.log(`Part ${number}: Found ${sections.length} sections.`)
     );
@@ -67,7 +73,9 @@ async function createSection(url) {
   const letter = await page.$eval("p.col-1.letter", (el) => el.textContent);
   const content = (
     await select(page, "div.course-content-inner", (el) => el.innerHTML)
-  )[1]; // Selector is also used for aside
+  )
+    .slice(1) // Remove the title
+    .join(""); // Selector can be used multiple times
 
   page.close();
   return { title, letter, content };

@@ -1,7 +1,12 @@
+import dotenv from "dotenv";
 import fs from "fs";
 import pdf from "html-pdf";
 
-export async function exportHtmlAsPdf(html, pdfPath) {
+dotenv.config();
+const EXPORT_PATH = process.env.EXPORT_PATH;
+const TIMEOUT = process.env.TIMEOUT;
+
+export async function exportHtmlAsPdf(html) {
   const options = {
     format: "A4",
     border: {
@@ -17,11 +22,12 @@ export async function exportHtmlAsPdf(html, pdfPath) {
           '<div style="text-align: center; font-size: 10px; color: #444;">{{page}}/{{pages}}</div>',
       },
     },
+    timeout: TIMEOUT,
   };
 
   return new Promise((resolve, reject) => {
-    fs.writeFileSync(`${pdfPath}.html`, html);
-    pdf.create(html, options).toFile(pdfPath, (err, res) => {
+    fs.writeFileSync(`${EXPORT_PATH}.html`, html);
+    pdf.create(html, options).toFile(EXPORT_PATH, (err, res) => {
       if (err) {
         reject(err);
       }

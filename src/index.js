@@ -4,17 +4,17 @@ import { buildHtmlDoc } from "./html.js";
 import { exportHtmlAsPdf } from "./pdf.js";
 import { scrape } from "./scraper.js";
 
-console.log("Script started.");
 dotenv.config();
-const pdfPath = process.env.EXPORT_PATH;
+const EXPORT_PATH = process.env.EXPORT_PATH;
 
 try {
+  console.log("Script started.");
   const websiteTree = await scrape();
   console.log("Scraping finished successfully. Building PDF...");
   const html = buildHtmlDoc(websiteTree);
-  console.log("PDF successfully built. Exporting... (est. 30s)");
-  await exportHtmlAsPdf(html, pdfPath);
-  console.log("PDF successfully created at", resolve(pdfPath));
+  console.log("PDF successfully built. Exporting... (est. 60s)");
+  await exportHtmlAsPdf(html);
+  console.log("PDF successfully created at", resolve(EXPORT_PATH));
 } catch (err) {
   console.log("Error creating PDF: ", err);
 }
