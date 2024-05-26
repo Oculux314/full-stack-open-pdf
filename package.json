@@ -2,10 +2,10 @@
   "name": "full-stack-open-pdf",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node main.js"
+    "start": "node ."
   },
   "author": "",
   "license": "ISC",
