@@ -5,11 +5,13 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "test": "node src/test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "html-pdf": "^3.0.1",
     "puppeteer": "^22.10.0"
   }
