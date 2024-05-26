@@ -8,7 +8,7 @@ export async function scrape() {
     console.log(`Opening connection to ${BASE_URL}`);
     browser = await puppeteer.launch({ headless: true });
 
-    const partNames = await getPartNames();
+    const partNames = (await getPartNames()).slice(0, 1);
     console.log(`Found ${partNames.length} parts.`);
     console.log("Scraping... (est. 30s)");
 
