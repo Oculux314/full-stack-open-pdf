@@ -1,11 +1,10 @@
 import dotenv from "dotenv";
 import { htmlToPdf } from "./pdf.js";
+import { scrape } from "./scraper.js";
 
 dotenv.config();
+const pdfPath = process.env.EXPORT_PATH;
 
-async function run() {
-  await htmlToPdf("<h1>Hello, World!</h1>", "test.pdf");
-  console.log("PDF created successfully.");
-}
-
-run();
+await scrape();
+await htmlToPdf("<h1>Hello, World!</h1>", pdfPath);
+console.log("PDF created successfully.");
