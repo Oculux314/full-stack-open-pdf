@@ -1,6 +1,6 @@
 import pdf from "html-pdf";
 
-export async function htmlToPdf(html, pdfPath) {
+export async function exportHtmlAsPdf(html, pdfPath) {
   return new Promise((resolve, reject) => {
     pdf.create(html).toFile(pdfPath, (err, res) => {
       if (err) {

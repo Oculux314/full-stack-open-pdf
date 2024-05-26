@@ -5,17 +5,19 @@ let browser;
 
 export async function scrape() {
   try {
+    console.log(`Opening connection to ${BASE_URL}`);
     browser = await puppeteer.launch({ headless: true });
 
     const partNames = await getPartNames();
     console.log(`Found ${partNames.length} parts.`);
+    console.log("Scraping... (est. 30s)");
 
     const parts = await Promise.all(partNames.map(createPart));
     parts.forEach(({ number, sections }) =>
       console.log(`Part ${number}: Found ${sections.length} sections.`)
     );
 
-    console.log(parts[13]);
+    return parts;
   } finally {
     browser?.close();
   }
@@ -44,15 +46,29 @@ async function createPart(name, number) {
   await page.goto(url, { waitUntil: "networkidle0" });
 
   const sectionUrls = (
-    await select(page, "div[class^=arrow__container] a", (el) => el.href)
+    await select(page, "div.arrow__container a", (el) => el.href)
   ).slice(1); // Slice to remove the contents page link
   page.close();
 
-  const sections = sectionUrls.map((url) => ({ url }));
+  const sections = await Promise.all(sectionUrls.map(createSection));
 
   return {
     name,
     number,
     sections,
   };
+}
+
+async function createSection(url) {
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: "networkidle0" });
+
+  const title = await page.$eval("h1.sub-header", (el) => el.textContent);
+  const letter = await page.$eval("p.col-1.letter", (el) => el.textContent);
+  const content = (
+    await select(page, "div.course-content-inner", (el) => el.innerHTML)
+  )[1]; // Selector is also used for aside
+
+  page.close();
+  return { title, letter, content };
 }
