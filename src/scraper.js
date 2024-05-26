@@ -5,27 +5,54 @@ let browser;
 
 export async function scrape() {
   try {
-    const page = await init();
-    const partNames = await getPartNames(page);
-    console.log("Part titles: ", partNames);
+    browser = await puppeteer.launch({ headless: true });
+
+    const partNames = await getPartNames();
+    console.log(`Found ${partNames.length} parts.`);
+
+    const parts = await Promise.all(partNames.map(createPart));
+    parts.forEach(({ number, sections }) =>
+      console.log(`Part ${number}: Found ${sections.length} sections.`)
+    );
+
+    console.log(parts[13]);
   } finally {
     browser?.close();
   }
 }
 
-async function init() {
-  browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-  await page.setViewport({ width: 1920, height: 1080 });
-  return page;
+async function select(page, selector, evaluator) {
+  const elements = await page.$$(selector);
+  return Promise.all(elements.map((elem) => elem.evaluate(evaluator)));
 }
 
-async function getPartNames(page) {
+async function getPartNames() {
+  const page = await browser.newPage();
   await page.goto(BASE_URL, { waitUntil: "networkidle0" });
-  const elements = await page.$$("h2::-p-text(Part ) + p");
-  const names = Promise.all(
-    elements.map((header) => header.evaluate((h) => h.textContent))
+  const names = await select(
+    page,
+    "h2::-p-text(Part ) + p",
+    (el) => el.textContent
   );
+  page.close();
   return names;
+}
+
+async function createPart(name, number) {
+  const page = await browser.newPage();
+  const url = `${BASE_URL}/part${number}`;
+  await page.goto(url, { waitUntil: "networkidle0" });
+
+  const sectionUrls = (
+    await select(page, "div[class^=arrow__container] a", (el) => el.href)
+  ).slice(1); // Slice to remove the contents page link
+  page.close();
+
+  const sections = sectionUrls.map((url) => ({ url }));
+
+  return {
+    name,
+    number,
+    sections,
+  };
 }
