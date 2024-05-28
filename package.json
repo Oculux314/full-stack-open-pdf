@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node .",
-    "dev": "nodemon ."
+    "dev": "nodemon .",
+    "test-formatted": "node src/testFormatted.js"
   },
   "author": "",
   "license": "ISC",
