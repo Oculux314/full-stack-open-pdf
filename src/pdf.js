@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import fs from "fs";
 import pdf from "html-pdf";
+import path from "path";
 
 dotenv.config();
-const EXPORT_PATH = process.env.EXPORT_PATH;
-const TIMEOUT = process.env.TIMEOUT;
+const { EXPORT_PATH, TIMEOUT } = process.env;
 
 export async function exportHtmlAsPdf(html) {
   const options = {
@@ -26,11 +26,12 @@ export async function exportHtmlAsPdf(html) {
   };
 
   return new Promise((resolve, reject) => {
-    fs.writeFileSync(`${EXPORT_PATH}.html`, html);
+    fs.mkdirSync(path.dirname(EXPORT_PATH), { recursive: true });
+    fs.writeFile(`${EXPORT_PATH}.html`, html, (err) => {
+      if (err) reject(err);
+    });
     pdf.create(html, options).toFile(EXPORT_PATH, (err, res) => {
-      if (err) {
-        reject(err);
-      }
+      if (err) reject(err);
       resolve(res);
     });
   });
