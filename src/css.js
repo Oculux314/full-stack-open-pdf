@@ -1,11 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+const FONT_SIZE = process.env.FONT_SIZE || "16px";
+const BOLD_CODE = process.env.BOLD_CODE === "true" || false;
+
 // Probably bad practice...
 export const styles = `
   body {
     font-family: Calibri, sans-serif;
-    font-size: ${process.env.FONT_SIZE || "16px"};
+    font-size: ${FONT_SIZE};
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -26,12 +29,11 @@ export const styles = `
 
   pre {
     color: #fff;
-    font-weight: bold;
+    ${BOLD_CODE && "font-weight: bold;"}
     background-color: #000;
     padding: 10px;
     border-radius: 5px;
     font-family: consolas, monospace;
-    overflow-x: auto;
     word-wrap: break-word;
   }
 
